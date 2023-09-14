@@ -1,0 +1,14 @@
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0 - SN: Eval Version
+COPYRIGHT ARM Germany GmbH 1987 - 2017
+"D:\huangxh\Documents\作業\大三上\維機實驗\Lab07_basic\Lab07.obj"  TO "D:\huangxh\Documents\作業\大三上\維機實驗\Lab07_basic\Lab07_basic" RS(256) PL(68) PW(78) 
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 010DH BYTE (13%) *
+******************************************************************************
+
+>> 
+>> 
+>> 
+Program Size: data=34.0 xdata=0 code=552
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1 @@
+"D:\huangxh\Documents\作業\大三上\維機實驗\Final\final.obj"  TO "D:\huangxh\Documents\作業\大三上\維機實驗\Final\Final" RS(256) PL(68) PW(78) 

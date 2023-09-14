@@ -1,0 +1,745 @@
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE FINAL
+OBJECT MODULE PLACED IN final.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe final.c DB OE BR INCDIR(C:\SiLabs\MCU\Inc)
+
+line level    source
+
+   1          /*******************************************************************************
+   2           *
+   3           * file: [glcd.c]
+   4           *
+   5           ******************************************************************************/
+   6          
+   7          #include "C8051F040.h"
+   8          #include "glcd.h"
+   9          #include "LCD.h"
+  10          
+  11          /*******************************************************************************
+  12           *
+  13           * functions for configuring the hardware
+  14           *
+  15           ******************************************************************************/
+  16          
+  17          //LCD
+  18          char LCD_status;
+  19          
+  20          void
+  21          LCD_PortConfig ()
+  22          {
+  23   1              //initialize SFR setup page
+  24   1              SFRPAGE = CONFIG_PAGE;                 // Switch to configuration page
+  25   1      
+  26   1              //setup the cross-bar and configure the I/O ports
+  27   1              XBR2 = 0xc0;
+  28   1              P3MDOUT = 0x3f;
+  29   1              P1MDIN = 0xff;
+  30   1      
+  31   1              //set to normal mode
+  32   1              SFRPAGE = LEGACY_PAGE;
+  33   1      }//end of function LCD_PortConfig ()
+  34          
+  35          unsigned int delay_lcd=10000;
+  36          
+  37          void
+  38          LCD_Delay ()
+  39          {
+  40   1              int i;
+  41   1              for (i=0;i<delay_lcd;i++); // wait for a long enough time...
+  42   1      }
+  43          
+  44          void
+  45          LCD_SendCommand (char cmd);
+  46          
+  47          void
+  48          LCD_Init ()
+  49          {
+  50   1              LCD_SendCommand (0x02);      // Initialize as 4-bit mode
+  51   1              LCD_SendCommand (0x28);         //Display function: 2 rows for 4-bit data, small 
+  52   1              LCD_SendCommand (0x0e);         //display and curson ON, curson blink off
+  53   1              LCD_SendCommand (0x01);         //clear display, cursor to home
+  54   1              LCD_SendCommand (0x10);         //cursor shift left
+  55   1              LCD_SendCommand (0x06);         //cursor increment, shift off
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 2   
+
+  56   1      }
+  57          
+  58          void
+  59          LCD_Status_SetRS ()
+  60          {
+  61   1              LCD_status = LCD_status | 1;
+  62   1      }
+  63          
+  64          void
+  65          LCD_Status_ClearRS ()
+  66          {
+  67   1              LCD_status = LCD_status & 0xfe;
+  68   1      }
+  69          
+  70          void
+  71          LCD_Status_SetWord (char word)
+  72          {
+  73   1              word = word & 0x0f; //0x0f display, cursor, blink on
+  74   1              LCD_status = LCD_status & 0x03;
+  75   1              LCD_status = LCD_status | (word<<2);
+  76   1      }
+  77          
+  78          void
+  79          LCD_Status_SetEnable ()
+  80          {
+  81   1              LCD_status = LCD_status | 0x02; //cursor to home
+  82   1      }
+  83          
+  84          
+  85          void
+  86          LCD_Status_ClearEnable ()
+  87          {
+  88   1              LCD_status = LCD_status & 0xfd;
+  89   1      }
+  90          
+  91          
+  92          void
+  93          LCD_SendCommand (char cmd)
+  94          {
+  95   1              LCD_Status_ClearRS ();  //rs = 0
+  96   1      
+  97   1              ///send the higher half
+  98   1              LCD_Status_SetWord ((cmd>>4) & 0x0f); 
+  99   1              LCD_Status_SetEnable ();        //en = 1
+ 100   1              P3 = LCD_status;
+ 101   1              LCD_Delay ();
+ 102   1              LCD_Status_ClearEnable ();      //en = 0
+ 103   1              P3 = LCD_status;
+ 104   1              LCD_Delay ();
+ 105   1      
+ 106   1              ///send the lower half
+ 107   1              LCD_Status_SetWord (cmd&0x0f);
+ 108   1              LCD_Status_SetEnable ();
+ 109   1              P3 = LCD_status;
+ 110   1              LCD_Delay ();
+ 111   1              LCD_Status_ClearEnable ();
+ 112   1              P3 = LCD_status;
+ 113   1              LCD_Delay ();
+ 114   1      }
+ 115          
+ 116          void
+ 117          LCD_SendData (char dat)
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 3   
+
+ 118          {
+ 119   1              LCD_Status_SetRS ();    //rs = 1
+ 120   1      
+ 121   1              ///send the higher(left) half
+ 122   1              LCD_Status_SetWord ((dat>>4) & 0x0f);
+ 123   1              LCD_Status_SetEnable ();        //prepare the status word,en = 1
+ 124   1              P3 = LCD_status;        //send out the status word
+ 125   1              LCD_Delay ();
+ 126   1              LCD_Status_ClearEnable ();      //prepare the status word,en = 0
+ 127   1              P3 = LCD_status;        //send out the status word
+ 128   1              LCD_Delay ();
+ 129   1      
+ 130   1              ///send the lower(right) half
+ 131   1              LCD_Status_SetWord (dat&0x0f);
+ 132   1              LCD_Status_SetEnable ();
+ 133   1              P3 = LCD_status;
+ 134   1              LCD_Delay ();
+ 135   1              LCD_Status_ClearEnable ();
+ 136   1              P3 = LCD_status;
+ 137   1              LCD_Delay ();
+ 138   1      }
+ 139          
+ 140          void
+ 141          LCD_PrintString (char* str)
+ 142          {
+ 143   1              int i;
+ 144   1      
+ 145   1              for (i=0; str[i]!=0; i++) {
+ 146   2                      LCD_SendData (str[i]);
+ 147   2              }//for i
+ 148   1      }
+ 149          
+ 150          
+ 151          void
+ 152          LCD_ClearScreen ()
+ 153          {
+ 154   1              LCD_SendCommand (0x01); //clear display screen
+ 155   1      }
+ 156          
+ 157          
+ 158          void
+ 159          Shutup_WatchDog ()
+ 160          {
+ 161   1              WDTCN = 0xde;
+ 162   1              WDTCN = 0xad;
+ 163   1      }//end of function Shutup_WatchDog
+ 164          
+ 165          //GLCD
+ 166          char P2_CWORD_TEMPLATE=0x21;
+ 167          void
+ 168          set_GLCD_WriteMode ()
+ 169          {
+ 170   1              P4MDOUT = 0xff;
+ 171   1      }//end of function set_GLCD_WriteMode
+ 172          
+ 173          
+ 174          void
+ 175          set_GLCD_ReadMode ()
+ 176          {
+ 177   1              P4MDOUT = 0x00;
+ 178   1              P4 = 0xff;
+ 179   1      }//end of function set_GLCD_ReadMode
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 4   
+
+ 180          
+ 181          void
+ 182          system_init_config ()
+ 183          {
+ 184   1              //turn-off the watch-dog timer
+ 185   1              WDTCN = 0xde;
+ 186   1              WDTCN = 0xad;
+ 187   1      
+ 188   1              //initialize SFR setup page
+ 189   1              SFRPAGE = CONFIG_PAGE;          // Switch to configuration page
+ 190   1      
+ 191   1              //setup the cross-bar and configure the I/O ports
+ 192   1              XBR2 = 0xc0;
+ 193   1              P2MDOUT = 0xff;
+ 194   1              P0MDOUT = 0xff;
+ 195   1      }//end of function system_init_config
+ 196          
+ 197          
+ 198          
+ 199          
+ 200          /*******************************************************************************
+ 201           *
+ 202           * functions to drive hardware signals
+ 203           *
+ 204           ******************************************************************************/
+ 205          
+ 206          void
+ 207          GLCD_delay ()
+ 208          {
+ 209   1              int i;
+ 210   1              for (i=0;i<10;i++);
+ 211   1      }//end of function GLCD_delay
+ 212          
+ 213          void
+ 214          GLCD_Write (char P2_cword, char P4_cword)
+ 215          {
+ 216   1              char P2_cword_rep;
+ 217   1      
+ 218   1              P2_cword_rep = P2_cword;
+ 219   1              set_GLCD_WriteMode ();
+ 220   1              GLCD_delay ();
+ 221   1      
+ 222   1              P2_cword_rep = P2_cword_rep & (~P2_E);  //clear E bit
+ 223   1              P2 = P2_cword_rep;
+ 224   1              P4 = P4_cword;
+ 225   1              GLCD_delay ();
+ 226   1      
+ 227   1              P2_cword_rep = P2_cword_rep | P2_E;             //set E bit
+ 228   1              P2 = P2_cword_rep;
+ 229   1              GLCD_delay ();
+ 230   1      
+ 231   1              P2_cword_rep = P2_cword_rep & (~P2_E);  //clear E bit
+ 232   1              P2 = P2_cword_rep;
+ 233   1              GLCD_delay ();
+ 234   1              P0 = P2_cword_rep; // nien debug
+ 235   1              
+ 236   1      }//end of function GLCD_Write
+ 237          
+ 238          char
+ 239          GLCD_Read (char P2_cword)
+ 240          {
+ 241   1              char status;
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 5   
+
+ 242   1              char P2_cword_rep;
+ 243   1      
+ 244   1              P2_cword_rep = P2_cword;
+ 245   1              set_GLCD_ReadMode ();
+ 246   1              GLCD_delay ();
+ 247   1      
+ 248   1              P2_cword_rep = P2_cword_rep & (~P2_E);          //clear E bit
+ 249   1              P2 = P2_cword_rep;
+ 250   1              GLCD_delay ();
+ 251   1      
+ 252   1              P2_cword_rep = P2_cword_rep | P2_E;                     //set E bit  
+ 253   1              P2 = P2_cword_rep;
+ 254   1              GLCD_delay ();
+ 255   1      
+ 256   1              status = P4;
+ 257   1      
+ 258   1              P2_cword_rep = P2_cword_rep & (~P2_E);          //clear E bit
+ 259   1              P2 = P2_cword_rep;
+ 260   1              GLCD_delay ();
+ 261   1      
+ 262   1              return status;
+ 263   1      }//end of function GLCD_Read
+ 264          
+ 265          
+ 266          
+ 267          /*******************************************************************************
+ 268           *
+ 269           * GLCD read operations
+ 270           *
+ 271           ******************************************************************************/
+ 272          
+ 273          char
+ 274          GLCD_ReadStatus ()
+ 275          {
+ 276   1              char P2_cword;
+ 277   1              char status;
+ 278   1      
+ 279   1              P2_cword = P2_CWORD_TEMPLATE;
+ 280   1              P2_cword = P2_cword & (~P2_RS);
+ 281   1              P2_cword = P2_cword | (P2_RW);
+ 282   1              status = GLCD_Read (P2_cword);
+ 283   1      
+ 284   1              return status;
+ 285   1      }//end of function GLCD_ReadStatus
+ 286          
+ 287          
+ 288          char
+ 289          GLCD_ReadData ()
+ 290          {
+ 291   1              char P2_cword;
+ 292   1              char dat;
+ 293   1      
+ 294   1              P2_cword = P2_CWORD_TEMPLATE;
+ 295   1              P2_cword = P2_cword | (P2_RS);
+ 296   1              P2_cword = P2_cword | (P2_RW);
+ 297   1              dat = GLCD_Read (P2_cword);
+ 298   1      
+ 299   1              return dat;
+ 300   1      }//end of function GLCD_ReadData
+ 301          
+ 302          int
+ 303          GLCD_IsBusy ()
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 6   
+
+ 304          {
+ 305   1              char status;
+ 306   1      
+ 307   1              status = GLCD_ReadStatus ();
+ 308   1              if (status&P4_Busy)
+ 309   1                      return 1;
+ 310   1              else
+ 311   1                      return 0;
+ 312   1      }//end of function GLCD_IsBusy
+ 313          
+ 314          
+ 315          int
+ 316          GLCD_IsReset ()
+ 317          {
+ 318   1              char status;
+ 319   1      
+ 320   1              status = GLCD_ReadStatus ();
+ 321   1              if (status & P4_Reset)
+ 322   1                      return 1;
+ 323   1              else
+ 324   1                      return 0;
+ 325   1      }//end of function GLCD_IsReset
+ 326          
+ 327          
+ 328          int
+ 329          GLCD_IsON ()
+ 330          {
+ 331   1              return !GLCD_IsOFF ();
+ 332   1      }//end of function GLCD_IsON
+ 333          
+ 334          
+ 335          int
+ 336          GLCD_IsOFF ()
+ 337          {
+ 338   1              char status;
+ 339   1      
+ 340   1              status = GLCD_ReadStatus ();
+ 341   1              if (status & P4_Status_On)
+ 342   1                      return 1;
+ 343   1              else
+ 344   1                      return 0;
+ 345   1      }//end of function GLCD_IsOFF
+ 346          
+ 347          
+ 348          /*******************************************************************************
+ 349           *
+ 350           * functions to send commands and data to GLCD
+ 351           *
+ 352           ******************************************************************************/
+ 353          
+ 354          void
+ 355          Set_Xaddr (char x)
+ 356          {
+ 357   1              char P2_cword, P4_cword;
+ 358   1      
+ 359   1              ///prepare control words
+ 360   1              P2_cword = P2_CWORD_TEMPLATE;
+ 361   1              P2_cword = P2_cword & (~P2_RS);         //clear RS bit
+ 362   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 363   1              P4_cword = P4_Set_Xaddr_TMPL;
+ 364   1              P4_cword = P4_cword | (x & 0x07);
+ 365   1      
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 7   
+
+ 366   1              ///flush out control signals
+ 367   1              while (GLCD_IsBusy());
+ 368   1              GLCD_Write (P2_cword, P4_cword);
+ 369   1      }//end of function Set_Xaddr
+ 370          
+ 371          
+ 372          void
+ 373          Set_Yaddr (char y)
+ 374          {
+ 375   1              char P2_cword, P4_cword;
+ 376   1      
+ 377   1              ///prepare control words
+ 378   1              P2_cword = P2_CWORD_TEMPLATE;
+ 379   1              P2_cword = P2_cword & (~P2_RS);         //clear RS bit
+ 380   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 381   1              P4_cword = P4_Set_Yaddr_TMPL;
+ 382   1              P4_cword = P4_cword | (y & 0x3f);
+ 383   1      
+ 384   1              ///flush out control signals
+ 385   1              while (GLCD_IsBusy());
+ 386   1              GLCD_Write (P2_cword, P4_cword);
+ 387   1      }//end of function Set_Yaddr
+ 388          
+ 389          
+ 390          void
+ 391          Set_DisplayStartLine (char z)
+ 392          {
+ 393   1              char P2_cword, P4_cword;
+ 394   1      
+ 395   1              ///prepare control words
+ 396   1              P2_cword = P2_CWORD_TEMPLATE;
+ 397   1              P2_cword = P2_cword & (~P2_RS);         //clear RS bit
+ 398   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 399   1              P4_cword = P4_Set_Zaddr_TMPL;
+ 400   1              P4_cword = P4_cword | (z & 0x3f);
+ 401   1              ///flush out control signals
+ 402   1              while (GLCD_IsBusy());
+ 403   1              GLCD_Write (P2_cword, P4_cword);
+ 404   1      }//end of function Set_DisplayStartLine
+ 405          
+ 406          
+ 407          void
+ 408          Send_Data (char pattern)
+ 409          {
+ 410   1              char P2_cword, P4_cword;
+ 411   1      
+ 412   1              ///prepare control words
+ 413   1              P2_cword = P2_CWORD_TEMPLATE;
+ 414   1              P2_cword = P2_cword | (P2_RS);          //set RS bit
+ 415   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 416   1              P4_cword = pattern;
+ 417   1      
+ 418   1              ///flush out control signals
+ 419   1              while (GLCD_IsBusy());
+ 420   1              GLCD_Write (P2_cword, P4_cword);
+ 421   1      }//end of function Send_Data
+ 422          
+ 423          void
+ 424          Set_DisplayOn (int mode)
+ 425          {
+ 426   1              char P2_cword, P4_cword;
+ 427   1              if(mode == 0){
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 8   
+
+ 428   2                      P2_CWORD_TEMPLATE = 0x21;
+ 429   2                      // P2_cword = P2_CWORD_TEMPLATE | P2_CS1;       //set right
+ 430   2              }
+ 431   1              if(mode == 1){
+ 432   2                      P2_CWORD_TEMPLATE = 0x22;
+ 433   2                      // P2_cword = P2_CWORD_TEMPLATE | P2_CS2;       //set left
+ 434   2              }
+ 435   1              ///prepare control words
+ 436   1              P2_cword = P2_CWORD_TEMPLATE  ; 
+ 437   1              P2_cword = P2_cword & (~P2_RS);         //set RS bit
+ 438   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 439   1              P4_cword = P4_Set_Display_TMPL;
+ 440   1              P4_cword = P4_cword | P4_Display_On;    //set display ON bit
+ 441   1      
+ 442   1              ///flush out control signals
+ 443   1              while (GLCD_IsBusy());
+ 444   1              GLCD_Write (P2_cword, P4_cword);
+ 445   1      }//end of function Set_DisplayOn
+ 446          
+ 447          
+ 448          void
+ 449          Set_DisplayOff ()
+ 450          {
+ 451   1              char P2_cword, P4_cword;
+ 452   1      
+ 453   1              ///prepare control words
+ 454   1              P2_cword = P2_CWORD_TEMPLATE;
+ 455   1              P2_cword = P2_cword & (~P2_RS);         //set RS bit
+ 456   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 457   1              P4_cword = P4_Set_Display_TMPL;
+ 458   1              P4_cword = P4_cword & (~P4_Display_On); //clear display ON bit
+ 459   1      
+ 460   1              ///flush out control signals
+ 461   1              while (GLCD_IsBusy());
+ 462   1              GLCD_Write (P2_cword, P4_cword);
+ 463   1      }//end of function Set_DisplayOff
+ 464          
+ 465          
+ 466          void
+ 467          GLCD_Reset ()
+ 468          {
+ 469   1              char P2_cword, P4_cword;
+ 470   1      
+ 471   1              set_GLCD_WriteMode ();
+ 472   1      
+ 473   1              P2_cword = P2_CWORD_TEMPLATE;
+ 474   1              P4_cword = 0;
+ 475   1      
+ 476   1              P2_cword = P2_cword | P2_RST;           //set reset bit
+ 477   1              GLCD_Write (P2_cword, P4_cword);
+ 478   1      
+ 479   1              P2_cword = P2_cword & (~P2_RST);        //clear reset bit
+ 480   1              GLCD_Write (P2_cword, P4_cword);
+ 481   1      
+ 482   1              P2_cword = P2_cword | P2_RST;           //set reset bit
+ 483   1              GLCD_Write (P2_cword, P4_cword);
+ 484   1      
+ 485   1              while (GLCD_IsReset());
+ 486   1      }//end of function GLCD_Reset
+ 487          
+ 488          
+ 489          /*******************************************************************************
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 9   
+
+ 490           *
+ 491           * Drawing functions that you implement
+ 492           *
+ 493           ******************************************************************************/
+ 494          
+ 495          
+ 496          void draw()
+ 497          {
+ 498   1              int i,j;
+ 499   1              Set_DisplayStartLine (0);
+ 500   1              Set_Yaddr (0);
+ 501   1              for(j=0;j<8;j++){
+ 502   2                      Set_Xaddr (j);
+ 503   2                      for (i=0;i<64;i++)
+ 504   2                              Send_Data (0x00);
+ 505   2              }
+ 506   1      }
+ 507          
+ 508          void initial(){
+ 509   1              Set_DisplayStartLine (0);
+ 510   1              Set_DisplayOn (0);
+ 511   1              draw();
+ 512   1              Set_DisplayOn (1);
+ 513   1              draw();
+ 514   1      }
+ 515          
+ 516          /*******************************************************************************
+ 517           *
+ 518           * button detect
+ 519           *
+ 520           ******************************************************************************/
+ 521          int button_detect () {
+ 522   1              int key_hold = 0 ;
+ 523   1              int key_release = 0;
+ 524   1              int N = 100, count = N, key = 0;
+ 525   1      
+ 526   1              P1 = 0;
+ 527   1              do {
+ 528   2                      key_hold = P1;  //assign input port P1 to key_hold
+ 529   2              } while (!key_hold);//if not press,keep waiting until key press
+ 530   1              
+ 531   1              //Stage 2: wait for key released;
+ 532   1              while (!key_release) { //while key is pressed
+ 533   2                      // detect which way
+ 534   2                      key_hold = P1;
+ 535   2                      if (P1 == 0x01){        //2^0
+ 536   3                              key_hold = 1;
+ 537   3                              key = 1;
+ 538   3                      }
+ 539   2                      else if(P1 == 0x02){ //2^1
+ 540   3                              key_hold = 1;
+ 541   3                              key = 2;
+ 542   3                      }
+ 543   2                      else if(P1 == 0x04){ //2^2
+ 544   3                              key_hold = 1;
+ 545   3                              key = 3;
+ 546   3                      }
+ 547   2                      else if(P1 == 0x08){ //2^3
+ 548   3                              key_hold = 1;
+ 549   3                              key = 4;
+ 550   3                      }
+ 551   2      
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 10  
+
+ 552   2                      //detect whether press a period of time
+ 553   2                      if (key_hold) {
+ 554   3                              count = N;      //set stable time
+ 555   3                      }
+ 556   2                      else {
+ 557   3                              count--;
+ 558   3                              if (count==0) {
+ 559   4                                      key_release = 1;
+ 560   4                              }
+ 561   3                      }
+ 562   2              }//Stage 2: wait for key released
+ 563   1              return key;
+ 564   1      }//end of function button_detect ()
+ 565          /*******************************************************************************
+ 566           *
+ 567           * the snack
+ 568           *
+ 569           ******************************************************************************/
+ 570          void 
+ 571          drawByteLeft(int x,int y,int bits){
+ 572   1              int i;
+ 573   1              Set_DisplayStartLine (0);
+ 574   1              Set_DisplayOn (1);
+ 575   1              Set_Xaddr(x);
+ 576   1              Set_Yaddr(y*8);
+ 577   1              for(i = y*8;i < y*8+8; i++){
+ 578   2                      Send_Data (bits);
+ 579   2              }
+ 580   1      }
+ 581          void 
+ 582          drawByteRight(int x,int y,int bits){
+ 583   1              int i;
+ 584   1              Set_DisplayStartLine (0);
+ 585   1              Set_DisplayOn (0);
+ 586   1              Set_Xaddr(x);
+ 587   1              Set_Yaddr((y-8)*8);
+ 588   1              for(i = (y-8)*8;i < (y-8)*8+8; i++){
+ 589   2                      Send_Data (bits);
+ 590   2              }
+ 591   1      }
+ 592          int snackLen = 2;
+ 593          //defualt head & bottom
+ 594          int snackX[3] = {7,7};
+ 595          int snackY[3] = {15,14};
+ 596          int head = 1,buttom=0;
+ 597          int fx,fy;
+ 598          int score = 0;
+ 599          void food(){
+ 600   1              fx = rand()%8+0;
+*** WARNING C206 IN LINE 600 OF final.c: 'rand': missing function-prototype
+ 601   1              fy = rand()%16+0;
+ 602   1              if(fy<8) {// draw left
+ 603   2                      drawByteLeft(fx,fy,0x3c);
+ 604   2              }
+ 605   1              if(fy>=8 && fy<16) {// draw right
+ 606   2                      drawByteRight(fx,fy,0x3c);
+ 607   2              }
+ 608   1      }
+ 609          void snack(int snackDest){
+ 610   1              int x,y; //0 <= x <= 7 ; 0 <= y <= 15
+ 611   1              int i = 0;
+ 612   1              if(snackX[buttom] > 0 && snackY[buttom] > 0){
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 11  
+
+ 613   2                      x = snackX[buttom];
+ 614   2                      y = snackY[buttom];
+ 615   2                      if(y<8) {// draw left
+ 616   3                              drawByteLeft(x,y,0x00);
+ 617   3                      }
+ 618   2                      if(y>=8 && y<16) {// draw right
+ 619   3                              drawByteRight(x,y,0x00);
+ 620   3                      }
+ 621   2              }
+ 622   1              buttom = head;
+ 623   1              if(snackDest == 1){ // up 
+ 624   2                      head = (head + 1)%2;
+ 625   2                      snackX[head] = snackX[buttom] - 1;
+ 626   2                      snackY[head] = snackY[buttom];
+ 627   2              }
+ 628   1              else if(snackDest == 2){ // down
+ 629   2                      head = (head + 1)%2;
+ 630   2                      snackX[head] = snackX[buttom] + 1;
+ 631   2                      snackY[head] = snackY[buttom];
+ 632   2              }
+ 633   1              else if(snackDest == 3){ // left
+ 634   2                      head = (head + 1)%2;
+ 635   2                      snackX[head] = snackX[buttom];
+ 636   2                      snackY[head] = snackY[buttom] - 1;
+ 637   2              }
+ 638   1              else if(snackDest == 4){ // right
+ 639   2                      head = (head + 1)%2;
+ 640   2                      snackX[head] = snackX[buttom];
+ 641   2                      snackY[head] = snackY[buttom] + 1;
+ 642   2              }
+ 643   1              if(snackX[head] >= 0 && snackX[head] < 8 && snackY[head] >= 0 && snackY[head] < 16){
+ 644   2                      x = snackX[head];
+ 645   2                      y = snackY[head];
+ 646   2                      if (x==fx && y==fy){
+ 647   3                              score += 1;
+ 648   3                              food();
+ 649   3                      }
+ 650   2                      if(y<8) {// draw left
+ 651   3                              drawByteLeft(x,y,0xff);
+ 652   3                      }
+ 653   2                      if(y>=8 && y<16) {// draw right
+ 654   3                              drawByteRight(x,y,0xff);
+ 655   3                      }
+ 656   2              }
+ 657   1              else if(snackX[head] < 0 || snackX[head] >= 8 || snackY[head] < 0 || snackY[head] >= 16){
+ 658   2                      initial();
+ 659   2                      food();
+ 660   2                      snackX[0] = 7;
+ 661   2                      snackX[1] = 7;
+ 662   2                      snackY[0] = 15;
+ 663   2                      snackY[1] = 14;
+ 664   2              }
+ 665   1              
+ 666   1      }
+ 667          
+ 668          /*******************************************************************************
+ 669           *
+ 670           * the main drawing function
+ 671           *
+ 672           ******************************************************************************/
+ 673          void
+ 674          main (){
+C51 COMPILER V9.60.0.0   FINAL                                                             01/12/2023 17:53:19 PAGE 12  
+
+ 675   1          int key;
+ 676   1              system_init_config ();
+ 677   1              Shutup_WatchDog ();
+ 678   1              GLCD_Reset ();
+ 679   1              // initial canvas
+ 680   1              initial();
+ 681   1              snack(0);
+ 682   1              food();
+ 683   1              while (1){
+ 684   2                      P4 = score;
+ 685   2                      key = button_detect ();
+ 686   2                      if(key == 1){ //up
+ 687   3                              snack(1);
+ 688   3                      }
+ 689   2                      else if(key == 2){ //down
+ 690   3                              snack(2);
+ 691   3                      }
+ 692   2                      else if(key == 3){ //left
+ 693   3                              snack(3);
+ 694   3                      }
+ 695   2                      else if(key == 4){ //right
+ 696   3                              snack(4);
+ 697   3                      }
+ 698   2              }
+ 699   1      }//end of function main
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1938    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     28      29
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

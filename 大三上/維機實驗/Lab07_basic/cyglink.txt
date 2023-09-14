@@ -1,0 +1,1 @@
+"D:\huangxh\Documents\作業\大三上\維機實驗\Lab07_basic\Lab07.obj"  TO "D:\huangxh\Documents\作業\大三上\維機實驗\Lab07_basic\Lab07_basic" RS(256) PL(68) PW(78) 

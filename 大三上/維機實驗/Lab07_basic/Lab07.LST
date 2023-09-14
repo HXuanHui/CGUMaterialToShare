@@ -1,0 +1,136 @@
+C51 COMPILER V9.60.0.0   LAB07                                                             12/22/2022 14:37:03 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE LAB07
+OBJECT MODULE PLACED IN Lab07.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Lab07.c DB OE BR INCDIR(C:\SiLabs\MCU\Inc)
+
+line level    source
+
+   1          #include "C8051F040.h"
+   2          
+   3          void
+   4          Port_Configuration ()
+   5          {
+   6   1              //initialize SFR setup page
+   7   1              SFRPAGE = CONFIG_PAGE;                 // Switch to configuration page
+   8   1      
+   9   1              //setup the cross-bar and configure the I/O ports
+  10   1              XBR2 = 0xc0;
+  11   1              P3MDIN = 0xff;
+  12   1              P2MDOUT = 0xff;
+  13   1      
+  14   1              //set to normal mode
+  15   1              SFRPAGE = LEGACY_PAGE;
+  16   1      }//end of function Port_Configuration
+  17          
+  18          void
+  19          Timer_Configuration ()
+  20          {
+  21   1              TMOD = 0x11;
+  22   1              TCON = 0x50;
+  23   1              CKCON = 0x10;
+  24   1      
+  25   1              IE = 0x8a;
+  26   1              TL0 = 0xfd;
+  27   1              TH0 = 0xeb;
+  28   1              TL1 = 0x35;
+  29   1              TH1 = 0xff;
+  30   1      }//end of function Timer_Configuration
+  31          
+  32          void
+  33          Config ()
+  34          {
+  35   1              //turn-off watch-dog timer
+  36   1              WDTCN = 0xde;
+  37   1              WDTCN = 0xad;
+  38   1      
+  39   1              SFRPAGE = CONFIG_PAGE;
+  40   1      
+  41   1              OSCICN = 0x83;
+  42   1              CLKSEL = 0x00;
+  43   1      
+  44   1              Port_Configuration ();
+  45   1              Timer_Configuration ();
+  46   1      }//end of function Default_Config
+  47          
+  48          unsigned char status;
+  49          int count;
+  50          int half_period;
+  51          
+  52          void Timer0_ISR ();
+  53          void Timer1_ISR ();
+  54          
+  55          int song[8];
+C51 COMPILER V9.60.0.0   LAB07                                                             12/22/2022 14:37:03 PAGE 2   
+
+  56          
+  57          int
+  58          main ()
+  59          {
+  60   1              Config ();
+  61   1              status = 0x00;
+  62   1              count = 0;
+  63   1              //half_period = 12;//set half period
+  64   1              song[0]=19;
+  65   1              song[1]=17;
+  66   1              song[2]=15;
+  67   1              song[3]=14;
+  68   1              song[4]=12;
+  69   1              song[5]=11;
+  70   1              song[6]=10;
+  71   1              song[7]=9;
+  72   1              while (1) {
+  73   2                      P2 = status;
+  74   2              }//end while (1)
+  75   1      }//end of function main
+  76          
+  77          void
+  78          Timer0_ISR () interrupt 1 //play tone by vary period
+  79          {
+  80   1              count++;        //supposed 100us-per-count
+  81   1      
+  82   1              if (count==half_period) {
+  83   2                      count = 0;
+  84   2                      status = ~status;
+  85   2              }
+  86   1      
+  87   1              TH0 = 0xff; //set interupt every 0.1 msec
+  88   1              TL0 = 0xfe;
+  89   1      }//end of function Timer0_ISR
+  90          
+  91          int countSec=0;
+  92          int i=0;
+  93          void
+  94          Timer1_ISR () interrupt 3 //play song
+  95          {
+  96   1              countSec++;     
+  97   1              if (countSec==10000) {
+  98   2                      countSec = 0;
+  99   2                      half_period = song[i];
+ 100   2                      i=(i+1)%8;
+ 101   2              }
+ 102   1              
+ 103   1              TH1 = 0xff; //set interupt every 0.1 msec
+ 104   1              TL1 = 0xfe;
+ 105   1      }//end of function Timer0_ISR
+ 106          
+ 107          
+ 108          
+ 109          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    255    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     25    ----
+C51 COMPILER V9.60.0.0   LAB07                                                             12/22/2022 14:37:03 PAGE 3   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

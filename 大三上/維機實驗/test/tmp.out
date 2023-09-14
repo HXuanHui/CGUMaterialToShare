@@ -1,0 +1,23 @@
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0 - SN: Eval Version
+COPYRIGHT ARM Germany GmbH 1987 - 2017
+"D:\huangxh\Documents\作業\大三上\維機實驗\test\Lab06.obj"  TO "D:\huangxh\Documents\作業\大三上\維機實驗\test\test" RS(256) PL(68) PW(78)  
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?GLCD_READDATA?LAB06
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?GLCD_ISON?LAB06
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?SET_DISPLAYOFF?LAB06
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0279H BYTE (30%) *
+******************************************************************************
+
+>> 
+>> 
+>> 
+Program Size: data=9.0 xdata=0 code=648
+LINK/LOCATE RUN COMPLETE.  3 WARNING(S),  0 ERROR(S)

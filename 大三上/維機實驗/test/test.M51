@@ -1,0 +1,527 @@
+BL51 BANKED LINKER/LOCATER V6.22.2.0          12/01/2022  16:08:25  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE D:\huangxh\Documents\作業\大三上\維機實驗\test\Lab06.
+>> obj TO D:\huangxh\Documents\作業\大三上\維機實驗\test\test RS (256) PL (68)
+>>  PW (78)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  D:\huangxh\Documents\作業\大三上\維機實驗\test\Lab06.obj (LAB06)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  D:\huangxh\Documents\作業\大三上\維機實驗\test\test (LAB0
+>> 6)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     00C9H     UNIT         ?PR?DRAW?LAB06
+            CODE    08C9H     0028H     UNIT         ?PR?GLCD_RESET?LAB06
+            CODE    08F1H     0025H     UNIT         ?PR?_GLCD_WRITE?LAB06
+            CODE    0916H     0025H     UNIT         ?PR?_GLCD_READ?LAB06
+            CODE    093BH     001FH     UNIT         ?PR?_SET_XADDR?LAB06
+            CODE    095AH     001FH     UNIT         ?PR?_SET_YADDR?LAB06
+            CODE    0979H     001FH     UNIT         ?PR?_SET_DISPLAYSTARTLINE
+>> ?LAB06
+            CODE    0998H     001BH     UNIT         ?PR?SET_DISPLAYON?LAB06
+            CODE    09B3H     001BH     UNIT         ?PR?SET_DISPLAYOFF?LAB06
+            CODE    09CEH     001AH     UNIT         ?PR?_SEND_DATA?LAB06
+            CODE    09E8H     0013H     UNIT         ?PR?SYSTEM_INIT_CONFIG?LA
+>> B06
+            CODE    09FBH     0010H     UNIT         ?PR?GLCD_ISBUSY?LAB06
+            CODE    0A0BH     0010H     UNIT         ?PR?GLCD_ISRESET?LAB06
+            CODE    0A1BH     0010H     UNIT         ?PR?GLCD_ISON?LAB06
+            CODE    0A2BH     0010H     UNIT         ?PR?GLCD_ISOFF?LAB06
+            CODE    0A3BH     000FH     UNIT         ?PR?GLCD_DELAY?LAB06
+            CODE    0A4AH     000EH     UNIT         ?PR?MAIN?LAB06
+            CODE    0A58H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0A64H     000BH     UNIT         ?PR?GLCD_READSTATUS?LAB06
+>> 
+            CODE    0A6FH     000BH     UNIT         ?PR?GLCD_READDATA?LAB06
+            CODE    0A7AH     0007H     UNIT         ?PR?SET_GLCD_READMODE?LAB
+>> 06
+            CODE    0A81H     0004H     UNIT         ?PR?SET_GLCD_WRITEMODE?LA
+>> B06
+
+
+
+OVERLAY MAP OF MODULE:   D:\huangxh\Documents\作業\大三上\維機實驗\test\test (
+>> LAB06)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+BL51 BANKED LINKER/LOCATER V6.22.2.0        12/01/2022  16:08:25  PAGE 2
+
+
+  +--> ?PR?MAIN?LAB06
+
+?PR?MAIN?LAB06
+  +--> ?PR?SYSTEM_INIT_CONFIG?LAB06
+  +--> ?PR?GLCD_RESET?LAB06
+  +--> ?PR?SET_DISPLAYON?LAB06
+  +--> ?PR?DRAW?LAB06
+
+?PR?GLCD_RESET?LAB06
+  +--> ?PR?SET_GLCD_WRITEMODE?LAB06
+  +--> ?PR?_GLCD_WRITE?LAB06
+  +--> ?PR?GLCD_ISRESET?LAB06
+
+?PR?_GLCD_WRITE?LAB06
+  +--> ?PR?SET_GLCD_WRITEMODE?LAB06
+  +--> ?PR?GLCD_DELAY?LAB06
+
+?PR?GLCD_ISRESET?LAB06
+  +--> ?PR?GLCD_READSTATUS?LAB06
+
+?PR?GLCD_READSTATUS?LAB06
+  +--> ?PR?_GLCD_READ?LAB06
+
+?PR?_GLCD_READ?LAB06
+  +--> ?PR?SET_GLCD_READMODE?LAB06
+  +--> ?PR?GLCD_DELAY?LAB06
+
+?PR?SET_DISPLAYON?LAB06
+  +--> ?PR?GLCD_ISBUSY?LAB06
+  +--> ?PR?_GLCD_WRITE?LAB06
+
+?PR?GLCD_ISBUSY?LAB06
+  +--> ?PR?GLCD_READSTATUS?LAB06
+
+?PR?DRAW?LAB06
+  +--> ?PR?_SET_DISPLAYSTARTLINE?LAB06
+  +--> ?PR?_SET_YADDR?LAB06
+  +--> ?PR?_SET_XADDR?LAB06
+  +--> ?PR?_SEND_DATA?LAB06
+
+?PR?_SET_DISPLAYSTARTLINE?LAB06
+  +--> ?PR?GLCD_ISBUSY?LAB06
+  +--> ?PR?_GLCD_WRITE?LAB06
+
+?PR?_SET_YADDR?LAB06
+  +--> ?PR?GLCD_ISBUSY?LAB06
+  +--> ?PR?_GLCD_WRITE?LAB06
+
+?PR?_SET_XADDR?LAB06
+  +--> ?PR?GLCD_ISBUSY?LAB06
+  +--> ?PR?_GLCD_WRITE?LAB06
+
+?PR?_SEND_DATA?LAB06
+  +--> ?PR?GLCD_ISBUSY?LAB06
+  +--> ?PR?_GLCD_WRITE?LAB06
+
+
+
+SYMBOL TABLE OF MODULE:  D:\huangxh\Documents\作業\大三上\維機實驗\test\test (
+>> LAB06)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        LAB06
+BL51 BANKED LINKER/LOCATER V6.22.2.0        12/01/2022  16:08:25  PAGE 3
+
+
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  C:08C9H         PUBLIC        GLCD_Reset
+  D:00FFH         PUBLIC        WDTCN
+  D:00A0H         PUBLIC        P2
+  C:0A64H         PUBLIC        GLCD_ReadStatus
+  C:093BH         PUBLIC        _Set_Xaddr
+  D:00C8H         PUBLIC        P4
+  C:095AH         PUBLIC        _Set_Yaddr
+  C:09B3H         PUBLIC        Set_DisplayOff
+  C:0979H         PUBLIC        _Set_DisplayStartLine
+  C:08F1H         PUBLIC        _GLCD_Write
+  D:00E8H         PUBLIC        ADC0CN
+  D:0084H         PUBLIC        SFRPAGE
+  D:00A4H         PUBLIC        P0MDOUT
+  D:00E8H         PUBLIC        ADC2CN
+  C:0A3BH         PUBLIC        GLCD_delay
+  D:00A8H         PUBLIC        IE
+  D:00A6H         PUBLIC        P2MDOUT
+  D:009CH         PUBLIC        P4MDOUT
+  C:0A2BH         PUBLIC        GLCD_IsOFF
+  D:00F8H         PUBLIC        CAN0CN
+  D:00D8H         PUBLIC        PCA0CN
+  D:00B8H         PUBLIC        IP
+  C:09E8H         PUBLIC        system_init_config
+  D:00E3H         PUBLIC        XBR2
+  D:00C0H         PUBLIC        SMB0CN
+  C:0A4AH         PUBLIC        main
+  C:0998H         PUBLIC        Set_DisplayOn
+  D:0088H         PUBLIC        CPT0CN
+  D:0088H         PUBLIC        CPT1CN
+  D:0088H         PUBLIC        CPT2CN
+  D:00F8H         PUBLIC        SPI0CN
+  C:0800H         PUBLIC        draw
+  C:0A7AH         PUBLIC        set_GLCD_ReadMode
+  D:0088H         PUBLIC        TCON
+  D:00C8H         PUBLIC        TMR2CN
+  D:00C8H         PUBLIC        TMR3CN
+  D:00C8H         PUBLIC        TMR4CN
+  C:0A0BH         PUBLIC        GLCD_IsReset
+  C:0A81H         PUBLIC        set_GLCD_WriteMode
+  C:0A1BH         PUBLIC        GLCD_IsON
+  C:09FBH         PUBLIC        GLCD_IsBusy
+  D:0098H         PUBLIC        SCON0
+  D:0098H         PUBLIC        SCON1
+  C:09CEH         PUBLIC        _Send_Data
+  D:00C0H         PUBLIC        CAN0STA
+  C:0A6FH         PUBLIC        GLCD_ReadData
+  C:0916H         PUBLIC        _GLCD_Read
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          SET_GLCD_WRITEMODE
+  C:0A81H         LINE#         17
+  C:0A81H         LINE#         18
+  C:0A81H         LINE#         19
+  C:0A84H         LINE#         20
+  -------         ENDPROC       SET_GLCD_WRITEMODE
+  -------         PROC          SET_GLCD_READMODE
+  C:0A7AH         LINE#         24
+  C:0A7AH         LINE#         25
+  C:0A7AH         LINE#         26
+  C:0A7DH         LINE#         27
+  C:0A80H         LINE#         28
+  -------         ENDPROC       SET_GLCD_READMODE
+  -------         PROC          SYSTEM_INIT_CONFIG
+  C:09E8H         LINE#         31
+BL51 BANKED LINKER/LOCATER V6.22.2.0        12/01/2022  16:08:25  PAGE 4
+
+
+  C:09E8H         LINE#         32
+  C:09E8H         LINE#         34
+  C:09EBH         LINE#         35
+  C:09EEH         LINE#         38
+  C:09F1H         LINE#         41
+  C:09F4H         LINE#         42
+  C:09F7H         LINE#         43
+  C:09FAH         LINE#         44
+  -------         ENDPROC       SYSTEM_INIT_CONFIG
+  -------         PROC          GLCD_DELAY
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0A3BH         LINE#         54
+  C:0A3BH         LINE#         55
+  C:0A3BH         LINE#         57
+  C:0A49H         LINE#         58
+  -------         ENDPROC       GLCD_DELAY
+  -------         PROC          _GLCD_WRITE
+  D:0007H         SYMBOL        P2_cword
+  D:0005H         SYMBOL        P4_cword
+  -------         DO            
+  D:0004H         SYMBOL        P2_cword_rep
+  -------         ENDDO         
+  C:08F1H         LINE#         61
+  C:08F1H         LINE#         62
+  C:08F1H         LINE#         65
+  C:08F3H         LINE#         66
+  C:08F6H         LINE#         67
+  C:08F9H         LINE#         69
+  C:08FCH         LINE#         70
+  C:08FEH         LINE#         71
+  C:0900H         LINE#         72
+  C:0903H         LINE#         74
+  C:0906H         LINE#         75
+  C:0908H         LINE#         76
+  C:090BH         LINE#         78
+  C:090EH         LINE#         79
+  C:0910H         LINE#         80
+  C:0913H         LINE#         81
+  C:0915H         LINE#         83
+  -------         ENDPROC       _GLCD_WRITE
+  -------         PROC          _GLCD_READ
+  D:0007H         SYMBOL        P2_cword
+  -------         DO            
+  D:0004H         SYMBOL        status
+  D:0005H         SYMBOL        P2_cword_rep
+  -------         ENDDO         
+  C:0916H         LINE#         86
+  C:0916H         LINE#         87
+  C:0916H         LINE#         91
+  C:0918H         LINE#         92
+  C:091BH         LINE#         93
+  C:091EH         LINE#         95
+  C:0921H         LINE#         96
+  C:0923H         LINE#         97
+  C:0926H         LINE#         99
+  C:0929H         LINE#         100
+  C:092BH         LINE#         101
+  C:092EH         LINE#         103
+  C:0930H         LINE#         105
+  C:0933H         LINE#         106
+  C:0935H         LINE#         107
+  C:0938H         LINE#         109
+  C:093AH         LINE#         110
+BL51 BANKED LINKER/LOCATER V6.22.2.0        12/01/2022  16:08:25  PAGE 5
+
+
+  -------         ENDPROC       _GLCD_READ
+  -------         PROC          GLCD_READSTATUS
+  -------         DO            
+  D:0007H         SYMBOL        P2_cword
+  D:0007H         SYMBOL        status
+  -------         ENDDO         
+  C:0A64H         LINE#         121
+  C:0A64H         LINE#         122
+  C:0A64H         LINE#         126
+  C:0A66H         LINE#         127
+  C:0A69H         LINE#         128
+  C:0A6CH         LINE#         129
+  -------         ENDPROC       GLCD_READSTATUS
+  -------         PROC          GLCD_READDATA
+  -------         DO            
+  D:0007H         SYMBOL        P2_cword
+  D:0007H         SYMBOL        dat
+  -------         ENDDO         
+  C:0A6FH         LINE#         136
+  C:0A6FH         LINE#         137
+  C:0A6FH         LINE#         141
+  C:0A71H         LINE#         142
+  C:0A74H         LINE#         143
+  C:0A77H         LINE#         144
+  -------         ENDPROC       GLCD_READDATA
+  -------         PROC          GLCD_ISBUSY
+  -------         DO            
+  D:0007H         SYMBOL        status
+  -------         ENDDO         
+  C:09FBH         LINE#         150
+  C:09FBH         LINE#         151
+  C:09FBH         LINE#         154
+  C:09FEH         LINE#         155
+  C:0A02H         LINE#         156
+  C:0A07H         LINE#         158
+  C:0A0AH         LINE#         159
+  -------         ENDPROC       GLCD_ISBUSY
+  -------         PROC          GLCD_ISRESET
+  -------         DO            
+  D:0007H         SYMBOL        status
+  -------         ENDDO         
+  C:0A0BH         LINE#         163
+  C:0A0BH         LINE#         164
+  C:0A0BH         LINE#         167
+  C:0A0EH         LINE#         168
+  C:0A12H         LINE#         169
+  C:0A17H         LINE#         171
+  C:0A1AH         LINE#         172
+  -------         ENDPROC       GLCD_ISRESET
+  -------         PROC          GLCD_ISON
+  C:0A1BH         LINE#         176
+  C:0A1BH         LINE#         177
+  C:0A1BH         LINE#         178
+  C:0A2AH         LINE#         179
+  -------         ENDPROC       GLCD_ISON
+  -------         PROC          GLCD_ISOFF
+  -------         DO            
+  D:0007H         SYMBOL        status
+  -------         ENDDO         
+  C:0A2BH         LINE#         183
+  C:0A2BH         LINE#         184
+  C:0A2BH         LINE#         187
+  C:0A2EH         LINE#         188
+  C:0A32H         LINE#         189
+  C:0A37H         LINE#         191
+BL51 BANKED LINKER/LOCATER V6.22.2.0        12/01/2022  16:08:25  PAGE 6
+
+
+  C:0A3AH         LINE#         192
+  -------         ENDPROC       GLCD_ISOFF
+  -------         PROC          _SET_XADDR
+  D:0006H         SYMBOL        x
+  -------         DO            
+  D:0003H         SYMBOL        P2_cword
+  D:0002H         SYMBOL        P4_cword
+  -------         ENDDO         
+  C:093BH         LINE#         202
+  C:093DH         LINE#         203
+  C:093DH         LINE#         207
+  C:093FH         LINE#         208
+  C:0942H         LINE#         209
+  C:0945H         LINE#         210
+  C:0947H         LINE#         211
+  C:094CH         LINE#         214
+  C:0953H         LINE#         215
+  -------         ENDPROC       _SET_XADDR
+  -------         PROC          _SET_YADDR
+  D:0006H         SYMBOL        y
+  -------         DO            
+  D:0003H         SYMBOL        P2_cword
+  D:0002H         SYMBOL        P4_cword
+  -------         ENDDO         
+  C:095AH         LINE#         220
+  C:095CH         LINE#         221
+  C:095CH         LINE#         225
+  C:095EH         LINE#         226
+  C:0961H         LINE#         227
+  C:0964H         LINE#         228
+  C:0966H         LINE#         229
+  C:096BH         LINE#         232
+  C:0972H         LINE#         233
+  -------         ENDPROC       _SET_YADDR
+  -------         PROC          _SET_DISPLAYSTARTLINE
+  D:0006H         SYMBOL        z
+  -------         DO            
+  D:0003H         SYMBOL        P2_cword
+  D:0002H         SYMBOL        P4_cword
+  -------         ENDDO         
+  C:0979H         LINE#         238
+  C:097BH         LINE#         239
+  C:097BH         LINE#         243
+  C:097DH         LINE#         244
+  C:0980H         LINE#         245
+  C:0983H         LINE#         246
+  C:0985H         LINE#         247
+  C:098AH         LINE#         249
+  C:0991H         LINE#         250
+  -------         ENDPROC       _SET_DISPLAYSTARTLINE
+  -------         PROC          _SEND_DATA
+  D:0006H         SYMBOL        pattern
+  -------         DO            
+  D:0003H         SYMBOL        P2_cword
+  D:0002H         SYMBOL        P4_cword
+  -------         ENDDO         
+  C:09CEH         LINE#         255
+  C:09D0H         LINE#         256
+  C:09D0H         LINE#         260
+  C:09D2H         LINE#         261
+  C:09D5H         LINE#         262
+  C:09D8H         LINE#         263
+  C:09DAH         LINE#         266
+  C:09E1H         LINE#         267
+  -------         ENDPROC       _SEND_DATA
+BL51 BANKED LINKER/LOCATER V6.22.2.0        12/01/2022  16:08:25  PAGE 7
+
+
+  -------         PROC          SET_DISPLAYON
+  -------         DO            
+  D:0003H         SYMBOL        P2_cword
+  D:0002H         SYMBOL        P4_cword
+  -------         ENDDO         
+  C:0998H         LINE#         271
+  C:0998H         LINE#         272
+  C:0998H         LINE#         276
+  C:099AH         LINE#         277
+  C:099DH         LINE#         278
+  C:09A0H         LINE#         279
+  C:09A2H         LINE#         280
+  C:09A5H         LINE#         283
+  C:09ACH         LINE#         284
+  -------         ENDPROC       SET_DISPLAYON
+  -------         PROC          SET_DISPLAYOFF
+  -------         DO            
+  D:0003H         SYMBOL        P2_cword
+  D:0002H         SYMBOL        P4_cword
+  -------         ENDDO         
+  C:09B3H         LINE#         289
+  C:09B3H         LINE#         290
+  C:09B3H         LINE#         294
+  C:09B5H         LINE#         295
+  C:09B8H         LINE#         296
+  C:09BBH         LINE#         297
+  C:09BDH         LINE#         298
+  C:09C0H         LINE#         301
+  C:09C7H         LINE#         302
+  -------         ENDPROC       SET_DISPLAYOFF
+  -------         PROC          GLCD_RESET
+  -------         DO            
+  D:0003H         SYMBOL        P2_cword
+  D:0002H         SYMBOL        P4_cword
+  -------         ENDDO         
+  C:08C9H         LINE#         307
+  C:08C9H         LINE#         308
+  C:08C9H         LINE#         311
+  C:08CCH         LINE#         313
+  C:08CEH         LINE#         314
+  C:08D0H         LINE#         316
+  C:08D3H         LINE#         317
+  C:08D9H         LINE#         319
+  C:08DCH         LINE#         320
+  C:08E1H         LINE#         322
+  C:08E4H         LINE#         323
+  C:08E9H         LINE#         325
+  C:08F0H         LINE#         326
+  -------         ENDPROC       GLCD_RESET
+  -------         PROC          DRAW
+  -------         DO            
+  D:0082H         SYMBOL        i
+  -------         ENDDO         
+  C:0800H         LINE#         336
+  C:0800H         LINE#         337
+  C:0800H         LINE#         339
+  C:0805H         LINE#         340
+  C:080AH         LINE#         341
+  C:080FH         LINE#         342
+  C:0812H         LINE#         343
+  C:0820H         LINE#         345
+  C:0825H         LINE#         346
+  C:082AH         LINE#         347
+  C:0838H         LINE#         349
+  C:083DH         LINE#         350
+BL51 BANKED LINKER/LOCATER V6.22.2.0        12/01/2022  16:08:25  PAGE 8
+
+
+  C:0842H         LINE#         351
+  C:0850H         LINE#         353
+  C:0855H         LINE#         354
+  C:085AH         LINE#         355
+  C:0868H         LINE#         357
+  C:086DH         LINE#         358
+  C:0872H         LINE#         359
+  C:0880H         LINE#         361
+  C:0885H         LINE#         362
+  C:088AH         LINE#         363
+  C:0898H         LINE#         365
+  C:089DH         LINE#         366
+  C:08A2H         LINE#         367
+  C:08B0H         LINE#         369
+  C:08B5H         LINE#         370
+  C:08BAH         LINE#         371
+  C:08C8H         LINE#         372
+  -------         ENDPROC       DRAW
+  -------         PROC          MAIN
+  C:0A4AH         LINE#         381
+  C:0A4AH         LINE#         382
+  C:0A4AH         LINE#         383
+  C:0A4DH         LINE#         385
+  C:0A50H         LINE#         387
+  C:0A53H         LINE#         389
+  C:0A56H         LINE#         391
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        LAB06
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?GLCD_READDATA?LAB06
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?GLCD_ISON?LAB06
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?SET_DISPLAYOFF?LAB06
+
+******************************************************************************
+>> 
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0279H BYTE (30%) *
+>> 
+******************************************************************************
+>> 
+
+Program Size: data=9.0 xdata=0 code=648
+LINK/LOCATE RUN COMPLETE.  3 WARNING(S),  0 ERROR(S)

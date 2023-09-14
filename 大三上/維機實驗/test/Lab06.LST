@@ -1,0 +1,427 @@
+C51 COMPILER V9.60.0.0   LAB06                                                             12/01/2022 16:08:25 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE LAB06
+OBJECT MODULE PLACED IN Lab06.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Lab06.c DB OE BR INCDIR(C:\SiLabs\MCU\Inc)
+
+line level    source
+
+   1          /*******************************************************************************
+   2           *
+   3           * file: [glcd.c]
+   4           *
+   5           ******************************************************************************/
+   6          
+   7          #include "C8051F040.h"
+   8          #include "glcd.h"
+   9          
+  10          /*******************************************************************************
+  11           *
+  12           * functions for configuring the hardware
+  13           *
+  14           ******************************************************************************/
+  15          
+  16          void
+  17          set_GLCD_WriteMode ()
+  18          {
+  19   1              P4MDOUT = 0xff;
+  20   1      }//end of function set_GLCD_WriteMode
+  21          
+  22          
+  23          void
+  24          set_GLCD_ReadMode ()
+  25          {
+  26   1              P4MDOUT = 0x00;
+  27   1              P4 = 0xff;
+  28   1      }//end of function set_GLCD_ReadMode
+  29          
+  30          void
+  31          system_init_config ()
+  32          {
+  33   1              //turn-off the watch-dog timer
+  34   1              WDTCN = 0xde;
+  35   1              WDTCN = 0xad;
+  36   1      
+  37   1              //initialize SFR setup page
+  38   1              SFRPAGE = CONFIG_PAGE;          // Switch to configuration page
+  39   1      
+  40   1              //setup the cross-bar and configure the I/O ports
+  41   1              XBR2 = 0xc0;
+  42   1              P2MDOUT = 0xff;
+  43   1              P0MDOUT = 0xff;
+  44   1      }//end of function system_init_config
+  45          
+  46          
+  47          /*******************************************************************************
+  48           *
+  49           * functions to drive hardware signals
+  50           *
+  51           ******************************************************************************/
+  52          
+  53          void
+  54          GLCD_delay ()
+  55          {
+C51 COMPILER V9.60.0.0   LAB06                                                             12/01/2022 16:08:25 PAGE 2   
+
+  56   1              int i;
+  57   1              for (i=0;i<10;i++);
+  58   1      }//end of function GLCD_delay
+  59          
+  60          void
+  61          GLCD_Write (char P2_cword, char P4_cword)
+  62          {
+  63   1              char P2_cword_rep;
+  64   1      
+  65   1              P2_cword_rep = P2_cword;
+  66   1              set_GLCD_WriteMode ();
+  67   1              GLCD_delay ();
+  68   1      
+  69   1              P2_cword_rep = P2_cword_rep & (~P2_E);  //clear E bit
+  70   1              P2 = P2_cword_rep;
+  71   1              P4 = P4_cword;
+  72   1              GLCD_delay ();
+  73   1      
+  74   1              P2_cword_rep = P2_cword_rep | P2_E;             //set E bit
+  75   1              P2 = P2_cword_rep;
+  76   1              GLCD_delay ();
+  77   1      
+  78   1              P2_cword_rep = P2_cword_rep & (~P2_E);  //clear E bit
+  79   1              P2 = P2_cword_rep;
+  80   1              GLCD_delay ();
+  81   1              P0 = P2_cword_rep; // nien debug
+  82   1              
+  83   1      }//end of function GLCD_Write
+  84          
+  85          char
+  86          GLCD_Read (char P2_cword)
+  87          {
+  88   1              char status;
+  89   1              char P2_cword_rep;
+  90   1      
+  91   1              P2_cword_rep = P2_cword;
+  92   1              set_GLCD_ReadMode ();
+  93   1              GLCD_delay ();
+  94   1      
+  95   1              P2_cword_rep = P2_cword_rep & (~P2_E);          //clear E bit
+  96   1              P2 = P2_cword_rep;
+  97   1              GLCD_delay ();
+  98   1      
+  99   1              P2_cword_rep = P2_cword_rep | P2_E;                     //set E bit  
+ 100   1              P2 = P2_cword_rep;
+ 101   1              GLCD_delay ();
+ 102   1      
+ 103   1              status = P4;
+ 104   1      
+ 105   1              P2_cword_rep = P2_cword_rep & (~P2_E);          //clear E bit
+ 106   1              P2 = P2_cword_rep;
+ 107   1              GLCD_delay ();
+ 108   1      
+ 109   1              return status;
+ 110   1      }//end of function GLCD_Read
+ 111          
+ 112          
+ 113          
+ 114          /*******************************************************************************
+ 115           *
+ 116           * GLCD read operations
+ 117           *
+C51 COMPILER V9.60.0.0   LAB06                                                             12/01/2022 16:08:25 PAGE 3   
+
+ 118           ******************************************************************************/
+ 119          
+ 120          char
+ 121          GLCD_ReadStatus ()
+ 122          {
+ 123   1              char P2_cword;
+ 124   1              char status;
+ 125   1      
+ 126   1              P2_cword = P2_CWORD_TEMPLATE;
+ 127   1              P2_cword = P2_cword & (~P2_RS);
+ 128   1              P2_cword = P2_cword | (P2_RW);
+ 129   1              status = GLCD_Read (P2_cword);
+ 130   1      
+ 131   1              return status;
+ 132   1      }//end of function GLCD_ReadStatus
+ 133          
+ 134          
+ 135          char
+ 136          GLCD_ReadData ()
+ 137          {
+ 138   1              char P2_cword;
+ 139   1              char dat;
+ 140   1      
+ 141   1              P2_cword = P2_CWORD_TEMPLATE;
+ 142   1              P2_cword = P2_cword | (P2_RS);
+ 143   1              P2_cword = P2_cword | (P2_RW);
+ 144   1              dat = GLCD_Read (P2_cword);
+ 145   1      
+ 146   1              return dat;
+ 147   1      }//end of function GLCD_ReadData
+ 148          
+ 149          int
+ 150          GLCD_IsBusy ()
+ 151          {
+ 152   1              char status;
+ 153   1      
+ 154   1              status = GLCD_ReadStatus ();
+ 155   1              if (status&P4_Busy)
+ 156   1                      return 1;
+ 157   1              else
+ 158   1                      return 0;
+ 159   1      }//end of function GLCD_IsBusy
+ 160          
+ 161          
+ 162          int
+ 163          GLCD_IsReset ()
+ 164          {
+ 165   1              char status;
+ 166   1      
+ 167   1              status = GLCD_ReadStatus ();
+ 168   1              if (status & P4_Reset)
+ 169   1                      return 1;
+ 170   1              else
+ 171   1                      return 0;
+ 172   1      }//end of function GLCD_IsReset
+ 173          
+ 174          
+ 175          int
+ 176          GLCD_IsON ()
+ 177          {
+ 178   1              return !GLCD_IsOFF ();
+ 179   1      }//end of function GLCD_IsON
+C51 COMPILER V9.60.0.0   LAB06                                                             12/01/2022 16:08:25 PAGE 4   
+
+ 180          
+ 181          
+ 182          int
+ 183          GLCD_IsOFF ()
+ 184          {
+ 185   1              char status;
+ 186   1      
+ 187   1              status = GLCD_ReadStatus ();
+ 188   1              if (status & P4_Status_On)
+ 189   1                      return 1;
+ 190   1              else
+ 191   1                      return 0;
+ 192   1      }//end of function GLCD_IsOFF
+ 193          
+ 194          
+ 195          /*******************************************************************************
+ 196           *
+ 197           * functions to send commands and data to GLCD
+ 198           *
+ 199           ******************************************************************************/
+ 200          
+ 201          void
+ 202          Set_Xaddr (char x)
+ 203          {
+ 204   1              char P2_cword, P4_cword;
+ 205   1      
+ 206   1              ///prepare control words
+ 207   1              P2_cword = P2_CWORD_TEMPLATE;
+ 208   1              P2_cword = P2_cword & (~P2_RS);         //clear RS bit
+ 209   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 210   1              P4_cword = P4_Set_Xaddr_TMPL;
+ 211   1              P4_cword = P4_cword | (x & 0x07);
+ 212   1      
+ 213   1              ///flush out control signals
+ 214   1              while (GLCD_IsBusy());
+ 215   1              GLCD_Write (P2_cword, P4_cword);
+ 216   1      }//end of function Set_Xaddr
+ 217          
+ 218          
+ 219          void
+ 220          Set_Yaddr (char y)
+ 221          {
+ 222   1              char P2_cword, P4_cword;
+ 223   1      
+ 224   1              ///prepare control words
+ 225   1              P2_cword = P2_CWORD_TEMPLATE;
+ 226   1              P2_cword = P2_cword & (~P2_RS);         //clear RS bit
+ 227   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 228   1              P4_cword = P4_Set_Yaddr_TMPL;
+ 229   1              P4_cword = P4_cword | (y & 0x3f);
+ 230   1      
+ 231   1              ///flush out control signals
+ 232   1              while (GLCD_IsBusy());
+ 233   1              GLCD_Write (P2_cword, P4_cword);
+ 234   1      }//end of function Set_Yaddr
+ 235          
+ 236          
+ 237          void
+ 238          Set_DisplayStartLine (char z)
+ 239          {
+ 240   1              char P2_cword, P4_cword;
+ 241   1      
+C51 COMPILER V9.60.0.0   LAB06                                                             12/01/2022 16:08:25 PAGE 5   
+
+ 242   1              ///prepare control words
+ 243   1              P2_cword = P2_CWORD_TEMPLATE;
+ 244   1              P2_cword = P2_cword & (~P2_RS);         //clear RS bit
+ 245   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 246   1              P4_cword = P4_Set_Zaddr_TMPL;
+ 247   1              P4_cword = P4_cword | (z & 0x3f);
+ 248   1              ///flush out control signals
+ 249   1              while (GLCD_IsBusy());
+ 250   1              GLCD_Write (P2_cword, P4_cword);
+ 251   1      }//end of function Set_DisplayStartLine
+ 252          
+ 253          
+ 254          void
+ 255          Send_Data (char pattern)
+ 256          {
+ 257   1              char P2_cword, P4_cword;
+ 258   1      
+ 259   1              ///prepare control words
+ 260   1              P2_cword = P2_CWORD_TEMPLATE;
+ 261   1              P2_cword = P2_cword | (P2_RS);          //set RS bit
+ 262   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 263   1              P4_cword = pattern;
+ 264   1      
+ 265   1              ///flush out control signals
+ 266   1              while (GLCD_IsBusy());
+ 267   1              GLCD_Write (P2_cword, P4_cword);
+ 268   1      }//end of function Send_Data
+ 269          
+ 270          void
+ 271          Set_DisplayOn ()
+ 272          {
+ 273   1              char P2_cword, P4_cword;
+ 274   1      
+ 275   1              ///prepare control words
+ 276   1              P2_cword = P2_CWORD_TEMPLATE;
+ 277   1              P2_cword = P2_cword & (~P2_RS);         //set RS bit
+ 278   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 279   1              P4_cword = P4_Set_Display_TMPL;
+ 280   1              P4_cword = P4_cword | P4_Display_On;    //set display ON bit
+ 281   1      
+ 282   1              ///flush out control signals
+ 283   1              while (GLCD_IsBusy());
+ 284   1              GLCD_Write (P2_cword, P4_cword);
+ 285   1      }//end of function Set_DisplayOn
+ 286          
+ 287          
+ 288          void
+ 289          Set_DisplayOff ()
+ 290          {
+ 291   1              char P2_cword, P4_cword;
+ 292   1      
+ 293   1              ///prepare control words
+ 294   1              P2_cword = P2_CWORD_TEMPLATE;
+ 295   1              P2_cword = P2_cword & (~P2_RS);         //set RS bit
+ 296   1              P2_cword = P2_cword & (~P2_RW);         //clear RW bit
+ 297   1              P4_cword = P4_Set_Display_TMPL;
+ 298   1              P4_cword = P4_cword & (~P4_Display_On); //clear display ON bit
+ 299   1      
+ 300   1              ///flush out control signals
+ 301   1              while (GLCD_IsBusy());
+ 302   1              GLCD_Write (P2_cword, P4_cword);
+ 303   1      }//end of function Set_DisplayOff
+C51 COMPILER V9.60.0.0   LAB06                                                             12/01/2022 16:08:25 PAGE 6   
+
+ 304          
+ 305          
+ 306          void
+ 307          GLCD_Reset ()
+ 308          {
+ 309   1              char P2_cword, P4_cword;
+ 310   1      
+ 311   1              set_GLCD_WriteMode ();
+ 312   1      
+ 313   1              P2_cword = P2_CWORD_TEMPLATE;
+ 314   1              P4_cword = 0;
+ 315   1      
+ 316   1              P2_cword = P2_cword | P2_RST;           //set reset bit
+ 317   1              GLCD_Write (P2_cword, P4_cword);
+ 318   1      
+ 319   1              P2_cword = P2_cword & (~P2_RST);        //clear reset bit
+ 320   1              GLCD_Write (P2_cword, P4_cword);
+ 321   1      
+ 322   1              P2_cword = P2_cword | P2_RST;           //set reset bit
+ 323   1              GLCD_Write (P2_cword, P4_cword);
+ 324   1      
+ 325   1              while (GLCD_IsReset());
+ 326   1      }//end of function GLCD_Reset
+ 327          
+ 328          
+ 329          /*******************************************************************************
+ 330           *
+ 331           * Drawing functions that you implement
+ 332           *
+ 333           ******************************************************************************/
+ 334          
+ 335          
+ 336          void draw()
+ 337          {
+ 338   1              int i;
+ 339   1              Set_DisplayStartLine (0);
+ 340   1              Set_Yaddr (0);
+ 341   1              Set_Xaddr (0);
+ 342   1              for (i=0;i<64;i++)
+ 343   1                      Send_Data (0xaa);
+ 344   1      
+ 345   1              Set_Xaddr (1);
+ 346   1              for (i=0;i<64;i++)
+ 347   1                      Send_Data (0xaa);
+ 348   1      
+ 349   1              Set_Xaddr (2);
+ 350   1              for (i=0;i<64;i++)
+ 351   1                      Send_Data (0xbb);
+ 352   1      
+ 353   1              Set_Xaddr (3);
+ 354   1              for (i=0;i<64;i++)
+ 355   1                      Send_Data (0x0f);
+ 356   1      
+ 357   1              Set_Xaddr (4);
+ 358   1              for (i=0;i<64;i++)
+ 359   1                      Send_Data (0x6a);
+ 360   1      
+ 361   1              Set_Xaddr (5);
+ 362   1              for (i=0;i<64;i++)
+ 363   1                      Send_Data (0x30);
+ 364   1      
+ 365   1              Set_Xaddr (6);
+C51 COMPILER V9.60.0.0   LAB06                                                             12/01/2022 16:08:25 PAGE 7   
+
+ 366   1              for (i=0;i<64;i++)
+ 367   1                      Send_Data (0xcc);
+ 368   1      
+ 369   1              Set_Xaddr (7);
+ 370   1              for (i=0;i<64;i++)
+ 371   1                      Send_Data (0xbb);
+ 372   1      }
+ 373          
+ 374          
+ 375          /*******************************************************************************
+ 376           *
+ 377           * the main drawing function
+ 378           *
+ 379           ******************************************************************************/
+ 380          
+ 381          main ()
+ 382          {
+ 383   1              system_init_config ();
+ 384   1              
+ 385   1              GLCD_Reset ();
+ 386   1      
+ 387   1              Set_DisplayOn ();
+ 388   1              
+ 389   1              draw(); 
+ 390   1              
+ 391   1              while (1);
+ 392   1      }//end of function main
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    633    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
