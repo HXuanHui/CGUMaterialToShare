@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "hw_01.h": "c",
+        "*.a": "c"
+    }
+}
