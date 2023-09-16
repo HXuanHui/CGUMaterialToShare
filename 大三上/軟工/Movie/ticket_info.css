@@ -1,0 +1,33 @@
+#nav_font{
+    position:relative;
+    left:7%;
+    font-weight: 600;
+}
+#nav_logo{
+    position:relative;
+    left:7%;
+    font-weight: 600;
+}
+#mybread{
+    position:relative;
+    width: 80%;
+    font-size: large;
+    left:9%;
+    font-weight: 600;
+}
+a:hover{
+    text-decoration:none
+}
+h1,h2,h3,h4,h5,h6,p{
+    font-weight:600 ;
+    
+}
+img{
+    height: 180px;
+    
+}
+#myticket{
+    position: absolute;
+    width: 1020px;
+    left: 10%;
+}

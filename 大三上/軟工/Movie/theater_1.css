@@ -1,0 +1,36 @@
+#nav_font{
+    position:relative;
+    left:7%;
+    font-weight: 600;
+}
+#nav_logo{
+    position:relative;
+    left:7%;
+    font-weight: 600;
+}
+#mybread{
+    position:relative;
+    width: 80%;
+    font-size: large;
+    left:9%;
+    font-weight: 600;
+}
+a:hover{
+    text-decoration:none
+}
+h1,h2,h3,h4,h5,h6,p{
+    font-weight:600 ;
+}
+.ellipsis1{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+img{
+    width: 90px;
+    height: 160px;
+}
+.card{
+    box-shadow: 0 5px 10px -5px;
+}
+

@@ -1,0 +1,54 @@
+#nav_font{
+    position:relative;
+    left:7%;
+    font-weight: 600;
+}
+#nav_logo{
+    position:relative;
+    left:7%;
+    font-weight: 600;
+}
+#mybread{
+    position:relative;
+    width: 80%;
+    font-size: large;
+    left:9%;
+    font-weight: 600;
+}
+a:hover{
+    text-decoration:none
+}
+h1,h2,h3,h4,h5,h6,p{
+    font-weight:600 ;
+    
+}
+#myjumbotron{
+    position: relative;
+    left: 10%;
+    height: 400px;
+    width: 1025px;
+    background-color: rgba(224, 224, 216, 0.543);
+    
+}
+#mybutton1{
+    position: relative;
+    left: 67%;
+    font-weight:600 ;
+    margin-top: 5px;
+    height: 40px;
+    width: 70px;
+}
+#mybutton1 a{
+    color: gray;
+}
+#mybutton1 a:hover{
+    color: azure;
+}
+#mybutton2{
+    position: relative;
+    left: 70%;
+    margin-top: 5px;
+    font-weight:600 ;
+    height: 40px;
+    width: 70px;
+}
